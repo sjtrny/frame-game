@@ -232,7 +232,6 @@ def update_image_src(value):
 def update_results(frame_no, hint_no, keypoint):
 
     # Get hashes from test img
-    print(f"frame{frame_no}-{hint_no}.\w+", glob_re(f"frame{frame_no}-{hint_no}.\w+", os.listdir(img_directory)))
     test_path = glob_re(f"frame{frame_no}-{hint_no}.\w+", os.listdir(img_directory))[0]
     try:
         test_hashes = get_hash_for_img(test_path)

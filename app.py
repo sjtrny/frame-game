@@ -6,7 +6,7 @@ from util import src_image_route, kps_image_route
 from util import img_directory, kps_directory
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
-
+server = app.server
 app.layout = dash.page_container
 
 # Serve images
