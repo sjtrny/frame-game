@@ -1,0 +1,7 @@
+black
+dash
+dash-bootstrap-components
+Flask-Caching
+numpy
+opencv-contrib-python
+sklearn
