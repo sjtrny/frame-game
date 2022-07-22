@@ -2,9 +2,10 @@ import os
 import pickle
 
 import dash
+from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
-from dash import Input, Output, callback, dcc, html
+from dash import Input, Output, State, callback, callback_context, dcc, html
 
 from util import (glob_re, img_directory, kps_directory, kps_image_route,
                   src_image_route)
@@ -26,9 +27,6 @@ dash.register_page(__name__, path="/", title="Frame Game Solver")
 list_of_images = glob_re("frame\d+-full.\w+", os.listdir(img_directory))
 sort_order = lambda x: int(x.split("-")[0].split("frame")[1])
 list_of_images = sorted(list_of_images, key=sort_order)
-#
-# get_hash_for_img = cache.memoize()(get_hash_for_img)
-# hashes = [get_hash_for_img(path) for path in list_of_images]
 
 with open("kp_data.pickle", "rb") as file:
     hash_dict = pickle.load(file)
@@ -51,8 +49,9 @@ layout = dbc.Container(
                                 dbc.Row(
                                     [
                                         dbc.Label(
-                                            "Game", html_for="frame-dropdown", width=2
+                                            "Frame", html_for="frame-dropdown", width=2
                                         ),
+
                                         dbc.Col(
                                             dcc.Dropdown(
                                                 id="frame-dropdown",
@@ -65,8 +64,15 @@ layout = dbc.Container(
                                                 value=1,
                                                 clearable=False,
                                             ),
-                                            width=6,
+                                            width=3,
                                         ),
+                                        dbc.Col([
+                                            dbc.Button("🔼", id="frame-up-btn", color="", className="px-0"),
+                                            dbc.Button("🔽", id="frame-dn-btn", color="", className="px-0"),
+                                        ], width=2, className="px-0"),
+                                        # dbc.Col([
+                                        #
+                                        # ], width=1, style={"padding-left": "0px", "padding-right": "0px"}),
                                     ],
                                     className="mb-2",
                                 ),
@@ -155,7 +161,7 @@ layout = dbc.Container(
                                 html.I(
                                     "Have some people figured out how to use computers or web searches to brute-force this game? Almost certainly."
                                 )
-                            ]
+                            ], style={"border-left": "thin solid black"}, className='p-3'
                         ),
                         html.P(
                             [
@@ -212,6 +218,25 @@ layout = dbc.Container(
     className="mb-5 mt-3",
 )
 
+@callback(
+    Output("frame-dropdown", "value"),
+    Input('frame-dn-btn', 'n_clicks'),
+    Input('frame-up-btn', 'n_clicks'),
+    State("frame-dropdown", "value"),
+)
+def decrement_frame(n_clicks_dn, n_clicks_up, frame_val):
+    changed_id = [p['prop_id'] for p in callback_context.triggered][0]
+    if 'frame-dn-btn' in changed_id:
+        if frame_val <= 1:
+            return 1
+        return frame_val - 1
+    elif 'frame-up-btn'  in changed_id:
+        if frame_val >= len(list_of_images):
+            return len(list_of_images)
+        return frame_val + 1
+    else:
+        return 1
+
 
 @callback(
     Output("frame-subslider", "disabled"),
@@ -222,7 +247,6 @@ layout = dbc.Container(
 def update_image_src(value):
     images = glob_re(f"frame{value}-\d+.\w+", os.listdir(img_directory))
     return False if len(images) > 1 else True, len(images), 1
-
 
 @callback(
     Output("test_image", "src"),
@@ -235,6 +259,10 @@ def update_image_src(value):
     ],
 )
 def update_results(frame_no, hint_no, keypoint):
+    changed_ids = [p['prop_id'] for p in callback_context.triggered]
+    if changed_ids == ["."]:
+        raise PreventUpdate
+
     # Get hashes from test img
     test_path = glob_re(f"frame{frame_no}-{hint_no}.\w+", os.listdir(img_directory))[0]
     try:
