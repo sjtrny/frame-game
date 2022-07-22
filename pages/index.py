@@ -3,12 +3,23 @@ import pickle
 
 import dash
 import dash_bootstrap_components as dbc
-import numpy as np
 import plotly.graph_objects as go
 from dash import Input, Output, callback, dcc, html
 
 from util import (glob_re, img_directory, kps_directory, kps_image_route,
                   src_image_route)
+
+def argmax(iter):
+    max_val = None
+    max_pos = 0
+    for i in range(len(iter)):
+        if max_val is None or iter[i] > max_val:
+            max_val = iter[i]
+            max_pos = i
+
+    return max_pos
+
+
 
 dash.register_page(__name__, path="/", title="Frame Game Solver")
 
@@ -230,14 +241,14 @@ def update_results(frame_no, hint_no, keypoint):
                 len(set.intersection(set(test_hashes), set(hash_dict[image_name])))
             )
 
-        if np.max(hash_overlaps) == 0:
+        if max(hash_overlaps) == 0:
             raise Exception
 
-        match_idx = np.argmax(hash_overlaps)
+        match_idx = argmax(hash_overlaps)
         best_frame_no = match_idx + 1
     except:
         test_hashes = None
-        hash_overlaps = np.zeros(len(list_of_images))
+        hash_overlaps = [0 for i in range(len(list_of_images))]
 
     # Set the test img url
     if keypoint:
@@ -266,7 +277,7 @@ def update_results(frame_no, hint_no, keypoint):
 
     # Set the figure data
     fig_data = go.Bar(
-        x=np.arange(1, 1 + len(list_of_images)),
+        x=[i for i in range(1, 1+ len(list_of_images))],
         y=hash_overlaps,
     )
     fig_layout = {"xaxis_title": "Image Number", "yaxis_title": "Number of Matches"}
