@@ -9,6 +9,7 @@ from dash import Input, Output, callback, dcc, html
 from util import (glob_re, img_directory, kps_directory, kps_image_route,
                   src_image_route)
 
+
 def argmax(iter):
     max_val = None
     max_pos = 0
@@ -18,7 +19,6 @@ def argmax(iter):
             max_pos = i
 
     return max_pos
-
 
 
 dash.register_page(__name__, path="/", title="Frame Game Solver")
@@ -109,7 +109,11 @@ layout = dbc.Container(
                             dbc.Col(
                                 [
                                     html.H4("Hint Image"),
-                                    html.Img(id="test_image", style={"width": "100%"}),
+                                    dcc.Loading(
+                                        html.Img(
+                                            id="test_image", style={"width": "100%"}
+                                        )
+                                    ),
                                 ],
                                 width=6,
                             ),
@@ -175,10 +179,13 @@ layout = dbc.Container(
                                 dbc.Tab(
                                     dbc.Card(
                                         dbc.CardBody(
-                                            html.Img(
-                                                id="source_image", className="img-fluid"
+                                            dcc.Loading(
+                                                html.Img(
+                                                    id="source_image",
+                                                    className="img-fluid",
+                                                )
                                             ),
-                                            className = "text-center"
+                                            className="text-center",
                                         )
                                     ),
                                     label="Matched Image",
@@ -228,7 +235,6 @@ def update_image_src(value):
     ],
 )
 def update_results(frame_no, hint_no, keypoint):
-
     # Get hashes from test img
     test_path = glob_re(f"frame{frame_no}-{hint_no}.\w+", os.listdir(img_directory))[0]
     try:
@@ -277,7 +283,7 @@ def update_results(frame_no, hint_no, keypoint):
 
     # Set the figure data
     fig_data = go.Bar(
-        x=[i for i in range(1, 1+ len(list_of_images))],
+        x=[i for i in range(1, 1 + len(list_of_images))],
         y=hash_overlaps,
     )
     fig_layout = {"xaxis_title": "Image Number", "yaxis_title": "Number of Matches"}
