@@ -1,40 +1,26 @@
-import dash
-from dash import html, dcc, callback, Input, Output
-import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
-import glob
 import os
-import re
-from util import get_hash_for_img, get_best_match_idx
-from util import img_directory, kps_directory, src_image_route, kps_image_route
+import pickle
+
+import dash
+import dash_bootstrap_components as dbc
 import numpy as np
-from flask_caching import Cache
+import plotly.graph_objects as go
+from dash import Input, Output, callback, dcc, html
 
-
-def glob_re(pattern, strings):
-    return list(filter(re.compile(pattern).match, strings))
-
+from util import (glob_re, img_directory, kps_directory, kps_image_route,
+                  src_image_route)
 
 dash.register_page(__name__, path="/", title="Frame Game Solver")
 
-cache = Cache(
-    dash.get_app().server,
-    config={
-        "CACHE_TYPE": "filesystem",
-        "CACHE_DIR": "cache",
-        "CACHE_DEFAULT_TIMEOUT": 86400,
-    },
-)
-
 list_of_images = glob_re("frame\d+-full.\w+", os.listdir(img_directory))
-
 sort_order = lambda x: int(x.split("-")[0].split("frame")[1])
-
 list_of_images = sorted(list_of_images, key=sort_order)
+#
+# get_hash_for_img = cache.memoize()(get_hash_for_img)
+# hashes = [get_hash_for_img(path) for path in list_of_images]
 
-get_hash_for_img = cache.memoize()(get_hash_for_img)
-hashes = [get_hash_for_img(path) for path in list_of_images]
-
+with open("kp_data.pickle", "rb") as file:
+    hash_dict = pickle.load(file)
 
 layout = dbc.Container(
     [
@@ -180,7 +166,8 @@ layout = dbc.Container(
                                         dbc.CardBody(
                                             html.Img(
                                                 id="source_image", className="img-fluid"
-                                            )
+                                            ),
+                                            className = "text-center"
                                         )
                                     ),
                                     label="Matched Image",
@@ -234,13 +221,13 @@ def update_results(frame_no, hint_no, keypoint):
     # Get hashes from test img
     test_path = glob_re(f"frame{frame_no}-{hint_no}.\w+", os.listdir(img_directory))[0]
     try:
-        test_hashes = get_hash_for_img(test_path)
+        test_hashes = hash_dict[test_path]
 
         hash_overlaps = []
 
-        for i in range(len(list_of_images)):
+        for image_name in list_of_images:
             hash_overlaps.append(
-                len(set.intersection(set(test_hashes), set(hashes[i])))
+                len(set.intersection(set(test_hashes), set(hash_dict[image_name])))
             )
 
         if np.max(hash_overlaps) == 0:
@@ -275,7 +262,7 @@ def update_results(frame_no, hint_no, keypoint):
             )[0]
             source_img_path = f"{src_image_route}{path}"
     else:
-        source_img_path = f"/static/sad_mac.jpg"
+        source_img_path = f"/assets/sad_mac.jpg"
 
     # Set the figure data
     fig_data = go.Bar(

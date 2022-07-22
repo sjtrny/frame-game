@@ -1,9 +1,9 @@
-from dash import Dash, dcc, html, Input, Output
 import dash
 import dash_bootstrap_components as dbc
 import flask
-from util import src_image_route, kps_image_route
-from util import img_directory, kps_directory
+from dash import Dash, Input, Output, dcc, html
+
+from util import img_directory, kps_directory, kps_image_route, src_image_route
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 server = app.server

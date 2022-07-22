@@ -1,7 +1,6 @@
 import dash
-from dash import html, dcc, callback, Input, Output
 import dash_bootstrap_components as dbc
-
+from dash import Input, Output, callback, dcc, html
 
 dash.register_page(__name__, path="/about", title="About | Frame Game Solver")
 
@@ -48,7 +47,11 @@ layout = dbc.Container(
 
                     """
                     ),
-                    html.Img(src="/assets/frame18-1-kps.png", style={"width":"240px"}, className='mb-3'),
+                    html.Img(
+                        src="/assets/frame18-1-kps.png",
+                        style={"width": "240px"},
+                        className="mb-3",
+                    ),
                     dcc.Markdown(
                         """
                         The keypoints are indicated by the circles, with:
@@ -61,15 +64,27 @@ layout = dbc.Container(
 
                     """
                     ),
-                    html.Img(src="/assets/frame18-full-kps.jpg", style={"width":"100%"}, className='mb-3'),
+                    html.Img(
+                        src="/assets/frame18-full-kps.jpg",
+                        style={"width": "100%"},
+                        className="mb-3",
+                    ),
                     dcc.Markdown(
                         """
                         Placing the hint image and the cropped area of the source image
                         side by side (below, left and right respectively) reveals many coinciding keypoints.
                     """
                     ),
-                    html.Img(src="/assets/frame18-1-kps.png", style={"width":"240px"}, className='mb-3'),
-                    html.Img(src="/assets/frame18-full-kps-zoom.jpg", style={"width":"240px"}, className='mb-3'),
+                    html.Img(
+                        src="/assets/frame18-1-kps.png",
+                        style={"width": "240px"},
+                        className="mb-3",
+                    ),
+                    html.Img(
+                        src="/assets/frame18-full-kps-zoom.jpg",
+                        style={"width": "240px"},
+                        className="mb-3",
+                    ),
                     dcc.Markdown(
                         """
                         #### Matching Strategy
@@ -97,7 +112,11 @@ layout = dbc.Container(
                         in the candidate set, which is the correct source, while other images have zero matches.
                     """
                     ),
-                    html.Img(src="/assets/frame18_hist.png", style={"width":"100%"}, className='mb-3'),
+                    html.Img(
+                        src="/assets/frame18_hist.png",
+                        style={"width": "100%"},
+                        className="mb-3",
+                    ),
                     dcc.Markdown(
                         """
                         ## Limitations
@@ -127,7 +146,7 @@ layout = dbc.Container(
 
                         Read more about me here https://sjtrny.com
                     """
-                    )
+                    ),
                 ],
                 width=7,
             )

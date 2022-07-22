@@ -1,0 +1,7 @@
+black
+dash==2.6.0
+dash-bootstrap-components
+isort
+numpy
+opencv-contrib-python
+sklearn
