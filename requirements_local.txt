@@ -5,3 +5,4 @@ isort
 numpy
 opencv-contrib-python
 sklearn
+Pillow

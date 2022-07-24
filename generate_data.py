@@ -4,13 +4,17 @@ import pickle
 
 import cv2 as cv
 import numpy as np
+from PIL import Image
 from sklearn.neighbors import NearestNeighbors
 
-from util import get_hashes, glob_re
+from util import glob_re, original_image_path, sort_images
 
 N_NEIGHBORS = 5
 DEG_QUANT_F = 1
 DECIMALS = 0
+
+MAX_IMG_WIDTH = 1080
+MAX_IMG_HEIGHT = 1080
 
 
 def patch_keypoint_pickling():
@@ -83,7 +87,7 @@ def get_hashes(kps):
 
 patch_keypoint_pickling()
 
-source_filenames = glob_re(f"frame.*", os.listdir("./imgs"))
+source_filenames = sort_images(glob_re(f"frame.*", os.listdir("./imgs")))
 
 sift = cv.SIFT_create()
 
@@ -91,23 +95,37 @@ hash_dict = {}
 
 for image_filename in source_filenames:
     print(image_filename)
-    source_img = cv.imread(f"./imgs/{image_filename}")
 
+    name = image_filename.split(".")[0]
+    type = image_filename.split(".")[-1]
+
+    # Convert, scale down and transfer image
+    im = Image.open(f"{original_image_path}/{image_filename}")
+    source_img = cv.cvtColor(np.array(im), cv.COLOR_RGB2BGR)
+
+    # Save small version for web
+    im.thumbnail((MAX_IMG_WIDTH, MAX_IMG_HEIGHT))
+    im.save(f"./assets/imgs/{name}.jpg", quality=50, progressive=True, optimize=True)
+
+    # Exract keypoints
     gray = cv.cvtColor(source_img, cv.COLOR_BGR2GRAY)
-
     kps = sift.detect(gray, None)
 
-    hash_dict[image_filename] = get_hashes(kps)
+    hash_dict[f"{name}.jpg"] = get_hashes(kps)
 
-    img = cv.drawKeypoints(
+    # Generate keypoint image
+    kp_img = cv.drawKeypoints(
         source_img,
         kps,
         source_img,
         flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS,
     )
-    name = image_filename.split(".")[0]
-    type = image_filename.split(".")[-1]
-    cv.imwrite(f"./imgs_kps/{name}-kps.{type}", img)
+
+    pil_image = Image.fromarray(cv.cvtColor(kp_img, cv.COLOR_BGR2RGB))
+    pil_image.thumbnail((MAX_IMG_WIDTH, MAX_IMG_HEIGHT))
+    pil_image.save(
+        f"./assets/imgs_kps/{name}-kps.jpg", quality=50, progressive=True, optimize=True
+    )
 
 with open("kp_data.pickle", "wb") as file:
     pickle.dump(hash_dict, file)
