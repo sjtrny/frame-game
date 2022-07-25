@@ -70,13 +70,12 @@ def get_hashes(kps):
                     kp2 = kps[knn_inds[i, j]]
                     kp2_pt = np.array(kp2.pt)
 
-                    np.linalg.norm(kp1_pt - kp2_pt)
-
                     a1 = kp1.angle / DEG_QUANT_F
                     a2 = kp2.angle / DEG_QUANT_F
                     a12 = np.rad2deg(angle(kp1_pt, kp2_pt)) / DEG_QUANT_F
+                    d12 = np.linalg.norm(kp1_pt - kp2_pt)
 
-                    pair_str = f"{a1:.{DECIMALS}f}|{a2:.{DECIMALS}f}|{a12:.{DECIMALS}f}|{kp1.size:.{DECIMALS}f}|{kp2.size:.{DECIMALS}f}"
+                    pair_str = f"{a1:.{DECIMALS}f}|{a2:.{DECIMALS}f}|{kp1.size:.{DECIMALS}f}|{kp2.size:.{DECIMALS}f}|{a12:.{DECIMALS}f}|{d12:.{DECIMALS}f}"
 
                     hashes.append(pair_str)
     except:

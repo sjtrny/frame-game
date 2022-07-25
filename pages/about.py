@@ -20,18 +20,15 @@ layout = dbc.Container(
                         """
                         ## Shazam
 
-                        Solving Siracusa's Frame Game is the visual equivalent
-                        of Shazam.
+                        Frame Game is the visual equivalent of [Shazam](https://en.wikipedia.org/wiki/Shazam_(application)).
 
                         Shazam is a music recognition service
                         that is able to identify songs based on arbitrary, noisy and short samples
                         of the original source. Most people know Shazam as an app
-                        for mobile devices. However Shazam existed before
-                        the smartphone as a telephone based service.
+                        for mobile devices. However Shazam existed as a phone service, long before smartphones.
 
                         The suprising thing about Shazam is that it doesn't use
-                        Machine Learning to recognise songs. Instead Shazam relies
-                        on matching carefully crafted features between songs and a clever scoring strategy.
+                        Machine Learning. Instead Shazam matches carefully crafted features between the sample and songs in its database.
 
                         We can do the same for the Frame Game.
 
@@ -90,22 +87,34 @@ layout = dbc.Container(
                         #### Matching Strategy
 
                         After keypoints have been extracted from the hint image and
-                        candidate images, we need to evaluate which of the candidates is most likely.
+                        source images, we need to evaluate which of the sources is most likely.
 
                         For a hint image, the corresponding source image would contain keypoints with:
                         - similar characteristics (scale, orientation)
                         - similar relative positioning
 
-                        In other words there should be pairs or even groups of keypoints
-                        that form "fingerprints" which appear in both hint and source images. It is insufficient to match using individual keypoints because their absolute position information is useless due to the hint being a crop
-                        of unknown position.
+                        One might test if individual keypoints match between hint
+                        and source images. However hint images are a crop from the source image,
+                        which means that the position information of individual keypoints
+                        does not translate from hint to source image.
 
-                        My strategy is to consider pairs of keypoints and for each pair compute distance and angle
-                        between them. The pairs are limited to the k-nearest neighbours of each keypoint. I've set
-                        k to 5 somewhat randomly and have not bothered to tune any further.
+                        To resolve this one can use pairs or even groups of keypoints
+                        that form "fingerprints" which appear in both hint and source images.
+
+                        My simple strategy is to consider pairs of keypoints. Each pair is represented
+                        by a string containing:
+                        - Angle of KP1
+                        - Angle of KP2
+                        - Size of KP1
+                        - Size of KP2
+                        - Angle between KP1 and KP2
+                        - Distance between KP1 and KP2
 
                         This information is concatenated into a string, along with the orientation and scale of both keypoints.
                         A small degree of quantisation is applied to handle imprecision or variabilty in the keypoint values.
+
+                        The pairs are limited to the k-nearest neighbours of each keypoint. I've set
+                        k to 5 somewhat randomly and have not bothered to tune any further.
 
                         Identifying the most likely source image then consists of finding the source image with the largest number
                         of the same strings. The figure below shows that 84 matches were found between the Wonka hint image and frame 18
