@@ -1,6 +1,6 @@
 # frame-game
 
-Code for http://frame-game.herokuapp.com.
+Code for https://frame-game.herokuapp.com.
 
 ### Overview
 
