@@ -4,5 +4,5 @@ dash-bootstrap-components
 isort
 numpy
 opencv-contrib-python
-sklearn
+scikit-learn
 Pillow
