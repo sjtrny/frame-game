@@ -129,31 +129,44 @@ layout = html.Div(
                     [
                         dbc.Col(
                             [
-                                html.H4("Controls"),
-                                html.Div(id="page-layout", children=build_layout([])),
+                                dbc.Card([
+                                    dbc.CardHeader("Controls"),
+                                    dbc.CardBody(id="page-layout", children=build_layout([]))
+                                ]),
                             ],
                             lg=3, xs=12, className='mb-3'
                         ),
                         dbc.Col(
                             [
-                                html.H4("Best Frame Match"),
-                                dcc.Loading(
-                                    html.A(
-                                        children=[
-                                            html.Img(
-                                                id="source_image",
-                                                className="img-fluid",
+                                dbc.Card([
+                                    dbc.CardHeader("Best Frame Match"),
+                                    dbc.CardBody([
+                                        dcc.Loading(
+                                            html.A(
+                                                children=[
+                                                    html.Img(
+                                                        id="source_image",
+                                                        className="img-fluid",
+                                                    )
+                                                ],
+                                                id="source_image_link",
                                             )
-                                        ],
-                                        id="source_image_link",
-                                    )
-                                ),
+                                        ),
+                                    ])
+                                ]),
+
                             ],
-                            lg=7, xs=12, className='mb-3'
+                            lg=6, xs=12, className='mb-3'
                         ),
                         dbc.Col(
-                            [html.H4("Frame Matches"), html.Div(id="match-list")],
-                            lg=2, xs=12, className='mb-3'
+                            [
+                                dbc.Card([
+                                    dbc.CardHeader("Frame Matches"),
+                                    dbc.CardBody(id="match-list")
+
+                                ])
+                            ],
+                            lg=3, xs=12, className='mb-3'
                         ),
                     ]
                 ),
