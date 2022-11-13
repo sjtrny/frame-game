@@ -53,155 +53,75 @@ layout = html.Div(
                                     [
                                         dbc.Row(
                                             [
-                                                dbc.Label(
-                                                    "Frame",
-                                                    html_for="frame-dropdown",
-                                                    width=2,
-                                                ),
-                                                dbc.Col(
-                                                    dcc.Dropdown(
-                                                        id="frame-dropdown",
-                                                        options=[
-                                                            {"label": i, "value": i}
-                                                            for i in range(
-                                                                1,
-                                                                1 + len(list_of_images),
-                                                            )
-                                                        ],
-                                                        value=1,
-                                                        clearable=False,
-                                                    ),
-                                                    width=3,
-                                                ),
-                                                dbc.Col(
-                                                    [
-                                                        dbc.Button(
-                                                            "🔼",
-                                                            id="frame-up-btn",
-                                                            color="",
-                                                            className="px-0",
-                                                        ),
-                                                        dbc.Button(
-                                                            "🔽",
-                                                            id="frame-dn-btn",
-                                                            color="",
-                                                            className="px-0",
-                                                        ),
-                                                    ],
-                                                    width=2,
-                                                    className="px-0",
-                                                ),
-                                            ],
-                                            className="mb-2",
-                                        ),
-                                        dbc.Row(
-                                            [
-                                                dbc.Label(
-                                                    "Hint #",
-                                                    html_for="frame-subslider",
-                                                    width=2,
-                                                ),
-                                                dbc.Col(
-                                                    dcc.Slider(
-                                                        id="frame-subslider",
-                                                        min=1,
-                                                        max=1,
-                                                        step=1,
-                                                        value=1,
-                                                    ),
-                                                    width=6,
-                                                ),
-                                            ],
-                                            className="mb-2",
-                                        ),
-                                        dbc.Row(
-                                            [
                                                 dbc.Col(
                                                     dbc.Switch(
                                                         id="keypoint-toggle",
                                                         label="Show Keypoints",
                                                         value=False,
                                                     ),
-                                                    width=6,
                                                 ),
                                             ],
                                             className="mb-2",
                                         ),
-                                    ]
-                                ),
-                                dbc.Row(
-                                    dbc.Col(
-                                        [
-                                            html.H4("Hint Image"),
-                                            dcc.Loading(
-                                                html.Img(
-                                                    id="test_image",
-                                                    style={"width": "100%"},
-                                                )
+                                        dbc.Row(
+                                            [
+                                                dbc.Label(
+                                                    "Frame",
+                                                ),
+                                                dcc.Dropdown(
+                                                    id="frame-dropdown",
+                                                    options=[
+                                                        {"label": i, "value": i}
+                                                        for i in range(
+                                                            1,
+                                                            1 + len(list_of_images),
+                                                        )
+                                                    ],
+                                                    value=1,
+                                                    clearable=False,
+                                                ),
+                                            ],
+                                            className="mb-2",
+                                        ),
+                                        dbc.Row(
+                                            [
+                                                dbc.Label(
+                                                    "Hint",
+                                                    html_for="frame-subslider",
+                                                ),
+                                                dcc.Slider(
+                                                    id="frame-subslider",
+                                                    min=1,
+                                                    max=1,
+                                                    step=1,
+                                                    value=1,
+                                                    included=False,
+                                                ),
+                                            ],
+                                            className="mb-2",
+                                        ),
+                                        dbc.Row(
+                                            dbc.Col(
+                                                [
+                                                    dcc.Loading(
+                                                        html.A(
+                                                            children=[
+                                                                html.Img(
+                                                                    id="test_image",
+                                                                    className="img-fluid",
+                                                                )
+                                                            ],
+                                                            id="test_image_link",
+                                                        )
+                                                    ),
+                                                ],
                                             ),
-                                        ],
-                                        width=6,
-                                    ),
-                                ),
-                            ],
-                            width=6,
-                        ),
-                        dbc.Col(
-                            [
-                                html.P(
-                                    [
-                                        "John Siracusa's ",
-                                        html.A(
-                                            "Frame Game",
-                                            href="https://hypercritical.co/frame-game",
                                         ),
-                                        """
-                                    challenges participants to identify the film or TV
-                                    series from a small still image from the source. Hints are given by
-                                    progressively increasing the area of the still image.
-                                    """,
-                                    ]
-                                ),
-                                html.P(
-                                    [
-                                        "Siracusa started the Frame Game on his ",
-                                        html.A(
-                                            "twitter",
-                                            href="https://twitter.com/siracusa",
-                                        ),
-                                        ". In a ",
-                                        html.A(
-                                            "blog post",
-                                            href="https://hypercritical.co/2022/04/25/frame-game",
-                                        ),
-                                        " he wrote: ",
-                                        "",
-                                    ]
-                                ),
-                                html.P(
-                                    [
-                                        html.I(
-                                            "Have some people figured out how to use computers or web searches to brute-force this game? Almost certainly."
-                                        )
                                     ],
-                                    style={"border-left": "thin solid black"},
-                                    className="p-3",
-                                ),
-                                html.P(
-                                    [
-                                        "This site serves as a proof of concept to do exactly that. ",
-                                        html.A("Read how it works", href="/about"),
-                                        ".",
-                                    ]
                                 ),
                             ],
-                            width=6,
+                            width=3,
                         ),
-                    ]
-                ),
-                dbc.Row(dbc.Col(html.Hr(), width=12)),
-                dbc.Row(
-                    [
                         dbc.Col(
                             [
                                 dbc.Tabs(
@@ -210,12 +130,16 @@ layout = html.Div(
                                             dbc.Card(
                                                 dbc.CardBody(
                                                     dcc.Loading(
-                                                        html.Img(
-                                                            id="source_image",
-                                                            className="img-fluid",
+                                                        html.A(
+                                                            children=[
+                                                                html.Img(
+                                                                    id="source_image",
+                                                                    className="img-fluid",
+                                                                )
+                                                            ],
+                                                            id="source_image_link",
                                                         )
                                                     ),
-                                                    className="text-center",
                                                 )
                                             ),
                                             label="Matched Image",
@@ -236,7 +160,7 @@ layout = html.Div(
                                     ]
                                 ),
                             ],
-                            width=12,
+                            width=9,
                         ),
                     ]
                 ),
@@ -245,26 +169,6 @@ layout = html.Div(
         ),
     ]
 )
-
-
-@callback(
-    Output("frame-dropdown", "value"),
-    Input("frame-dn-btn", "n_clicks"),
-    Input("frame-up-btn", "n_clicks"),
-    State("frame-dropdown", "value"),
-)
-def decrement_frame(n_clicks_dn, n_clicks_up, frame_val):
-    changed_id = [p["prop_id"] for p in callback_context.triggered][0]
-    if "frame-dn-btn" in changed_id:
-        if frame_val <= 1:
-            return 1
-        return frame_val - 1
-    elif "frame-up-btn" in changed_id:
-        if frame_val >= len(list_of_images):
-            return len(list_of_images)
-        return frame_val + 1
-    else:
-        return 1
 
 
 @callback(
@@ -280,7 +184,9 @@ def update_image_src(value):
 
 @callback(
     Output("test_image", "src"),
+    Output("test_image_link", "href"),
     Output("source_image", "src"),
+    Output("source_image_link", "href"),
     Output("match-graph", "figure"),
     [
         Input("frame-dropdown", "value"),
@@ -327,7 +233,18 @@ def update_results(frame_no, hint_no, keypoint):
         x=[i for i in range(1, 1 + len(list_of_images))],
         y=hash_overlaps,
     )
-    fig_layout = {"xaxis_title": "Image Number", "yaxis_title": "Number of Matches"}
+    fig_layout = {
+        "xaxis_title": "Image Number",
+        "xaxis_fixedrange": True,
+        "yaxis_title": "Number of Matches",
+        "yaxis_fixedrange": True,
+    }
     figure = go.Figure(data=[fig_data], layout=fig_layout)
 
-    return test_image_path, source_image_path, figure
+    return (
+        test_image_path,
+        test_image_path,
+        source_image_path,
+        source_image_path,
+        figure,
+    )

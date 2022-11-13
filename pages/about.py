@@ -4,6 +4,8 @@ from dash import Input, Output, callback, dcc, html
 
 dash.register_page(__name__, path="/about", title="About | Frame Game Solver")
 
+col_width = 7
+
 layout = html.Div(
     [
         dbc.NavbarSimple(
@@ -18,6 +20,57 @@ layout = html.Div(
         ),
         dbc.Container(
             [
+                dbc.Row(
+                    dbc.Col(
+                        [
+                            html.P(
+                                [
+                                    "John Siracusa's ",
+                                    html.A(
+                                        "Frame Game",
+                                        href="https://hypercritical.co/frame-game",
+                                    ),
+                                    """
+                            challenges participants to identify the film or TV
+                            series from a small still image from the source. Hints are given by
+                            progressively increasing the area of the still image.
+                            """,
+                                ]
+                            ),
+                            html.P(
+                                [
+                                    "Siracusa started the Frame Game on his ",
+                                    html.A(
+                                        "twitter",
+                                        href="https://twitter.com/siracusa",
+                                    ),
+                                    ". In a ",
+                                    html.A(
+                                        "blog post",
+                                        href="https://hypercritical.co/2022/04/25/frame-game",
+                                    ),
+                                    " he wrote: ",
+                                    "",
+                                ]
+                            ),
+                            html.P(
+                                [
+                                    html.I(
+                                        "Have some people figured out how to use computers or web searches to brute-force this game? Almost certainly."
+                                    )
+                                ],
+                                style={"border-left": "thin solid black"},
+                                className="p-3",
+                            ),
+                            html.P(
+                                [
+                                    "This site serves as a proof of concept to do exactly that.",
+                                ]
+                            ),
+                        ],
+                        width=col_width,
+                    )
+                ),
                 dbc.Row(
                     dbc.Col(
                         [
@@ -154,7 +207,7 @@ layout = html.Div(
 
                             ## Code
 
-                            Complete code is available in this [Github](http://github.com/sjtrny/framegame) repo.
+                            Complete code is available in this [GitHub](http://github.com/sjtrny/framegame) repo.
 
                             ## About Me
 
@@ -162,7 +215,7 @@ layout = html.Div(
                         """
                             ),
                         ],
-                        width=7,
+                        width=col_width,
                     )
                 ),
             ],
