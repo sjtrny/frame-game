@@ -4,7 +4,8 @@ from dash import Input, Output, callback, dcc, html
 
 dash.register_page(__name__, path="/about", title="About | Frame Game Solver")
 
-col_width = 7
+col_w_lg = 7
+col_w_xs = 12
 
 layout = html.Div(
     [
@@ -68,7 +69,7 @@ layout = html.Div(
                                 ]
                             ),
                         ],
-                        width=col_width,
+                        lg=col_w_lg, xs=col_w_xs,
                     )
                 ),
                 dbc.Row(
@@ -215,7 +216,7 @@ layout = html.Div(
                         """
                             ),
                         ],
-                        width=col_width,
+                        lg=col_w_lg, xs=col_w_xs,
                     )
                 ),
             ],
