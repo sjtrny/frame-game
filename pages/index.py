@@ -1,5 +1,6 @@
 import os
 import pickle
+from urllib.parse import urlencode
 
 import dash
 import dash_bootstrap_components as dbc
@@ -7,6 +8,7 @@ import plotly.graph_objects as go
 from dash import Input, Output, State, callback, callback_context, dcc, html
 from dash.exceptions import PreventUpdate
 
+from app_util import apply_default_value, dash_kwarg, parse_state
 from util import glob_re, kps_image_route, sort_images, src_image_route
 
 
@@ -31,8 +33,85 @@ list_of_images = sort_images(
 with open("kp_data.pickle", "rb") as file:
     hash_dict = pickle.load(file)
 
+
+def build_layout(params):
+    return [
+        dbc.Form(
+            [
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            apply_default_value(params)(dbc.Switch)(
+                                id="keypoints",
+                                label="Show Keypoints",
+                                value=False,
+                            ),
+                        ),
+                    ],
+                    className="mb-2",
+                ),
+                dbc.Row(
+                    [
+                        dbc.Label(
+                            "Frame",
+                        ),
+                        apply_default_value(params)(dcc.Dropdown)(
+                            id="frame",
+                            options=[
+                                {"label": i, "value": i}
+                                for i in range(
+                                    1,
+                                    1 + len(list_of_images),
+                                )
+                            ],
+                            value=1,
+                            clearable=False,
+                        ),
+                    ],
+                    className="mb-2",
+                ),
+                dbc.Row(
+                    [
+                        dbc.Label(
+                            "Hint",
+                            html_for="hint-num",
+                        ),
+                        apply_default_value(params)(dcc.Slider)(
+                            id="hint-num",
+                            min=1,
+                            max=1,
+                            step=1,
+                            value=1,
+                            included=False,
+                        ),
+                    ],
+                    className="mb-2",
+                ),
+                dbc.Row(
+                    dbc.Col(
+                        [
+                            dcc.Loading(
+                                html.A(
+                                    children=[
+                                        html.Img(
+                                            id="test_image",
+                                            className="img-fluid",
+                                        )
+                                    ],
+                                    id="test_image_link",
+                                )
+                            ),
+                        ],
+                    ),
+                ),
+            ],
+        ),
+    ]
+
+
 layout = html.Div(
     [
+        dcc.Location(id="url", refresh=False),
         dbc.NavbarSimple(
             children=[
                 dbc.NavItem(html.A("About", href="/about", className="nav-link")),
@@ -48,78 +127,7 @@ layout = html.Div(
                 dbc.Row(
                     [
                         dbc.Col(
-                            [
-                                dbc.Form(
-                                    [
-                                        dbc.Row(
-                                            [
-                                                dbc.Col(
-                                                    dbc.Switch(
-                                                        id="keypoint-toggle",
-                                                        label="Show Keypoints",
-                                                        value=False,
-                                                    ),
-                                                ),
-                                            ],
-                                            className="mb-2",
-                                        ),
-                                        dbc.Row(
-                                            [
-                                                dbc.Label(
-                                                    "Frame",
-                                                ),
-                                                dcc.Dropdown(
-                                                    id="frame-dropdown",
-                                                    options=[
-                                                        {"label": i, "value": i}
-                                                        for i in range(
-                                                            1,
-                                                            1 + len(list_of_images),
-                                                        )
-                                                    ],
-                                                    value=1,
-                                                    clearable=False,
-                                                ),
-                                            ],
-                                            className="mb-2",
-                                        ),
-                                        dbc.Row(
-                                            [
-                                                dbc.Label(
-                                                    "Hint",
-                                                    html_for="frame-subslider",
-                                                ),
-                                                dcc.Slider(
-                                                    id="frame-subslider",
-                                                    min=1,
-                                                    max=1,
-                                                    step=1,
-                                                    value=1,
-                                                    included=False,
-                                                ),
-                                            ],
-                                            className="mb-2",
-                                        ),
-                                        dbc.Row(
-                                            dbc.Col(
-                                                [
-                                                    dcc.Loading(
-                                                        html.A(
-                                                            children=[
-                                                                html.Img(
-                                                                    id="test_image",
-                                                                    className="img-fluid",
-                                                                )
-                                                            ],
-                                                            id="test_image_link",
-                                                        )
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ],
+                            html.Div(id="page-layout", children=build_layout([])),
                             width=3,
                         ),
                         dbc.Col(
@@ -170,12 +178,40 @@ layout = html.Div(
     ]
 )
 
+components = [
+    ("frame", "value"),
+]
+
+graph_inputs = [Input(x[0], x[1]) for x in components]
+
 
 @callback(
-    Output("frame-subslider", "disabled"),
-    Output("frame-subslider", "max"),
-    Output("frame-subslider", "value"),
-    Input("frame-dropdown", "value"),
+    Output("page-layout", "children"),
+    inputs=[Input("url", "href")],
+)
+def page_load(href):
+    if not href:
+        return []
+    state = parse_state(href)
+    return build_layout(state)
+
+
+@callback(
+    Output("url", "search"),
+    inputs=graph_inputs,
+)
+# Add dash kward arg here
+@dash_kwarg(graph_inputs)
+def update_url_state(**kwargs):
+    state = urlencode(kwargs)
+    return f"?{state}"
+
+
+@callback(
+    Output("hint-num", "disabled"),
+    Output("hint-num", "max"),
+    Output("hint-num", "value"),
+    Input("frame", "value"),
 )
 def update_image_src(value):
     images = glob_re(f"frame{value}-\d+.\w+", os.listdir(f".{src_image_route}"))
@@ -189,9 +225,9 @@ def update_image_src(value):
     Output("source_image_link", "href"),
     Output("match-graph", "figure"),
     [
-        Input("frame-dropdown", "value"),
-        Input("frame-subslider", "value"),
-        Input("keypoint-toggle", "value"),
+        Input("frame", "value"),
+        Input("hint-num", "value"),
+        Input("keypoints", "value"),
     ],
 )
 def update_results(frame_no, hint_no, keypoint):
