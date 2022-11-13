@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 import dash
 import dash_bootstrap_components as dbc
+import numpy as np
 import plotly.graph_objects as go
 from dash import Input, Output, State, callback, callback_context, dcc, html
 from dash.exceptions import PreventUpdate
@@ -11,16 +12,16 @@ from dash.exceptions import PreventUpdate
 from app_util import apply_default_value, dash_kwarg, parse_state
 from util import glob_re, kps_image_route, sort_images, src_image_route
 
-
-def argmax(iter):
-    max_val = None
-    max_pos = 0
-    for i in range(len(iter)):
-        if max_val is None or iter[i] > max_val:
-            max_val = iter[i]
-            max_pos = i
-
-    return max_pos
+#
+# def argmax(iter):
+#     max_val = None
+#     max_pos = 0
+#     for i in range(len(iter)):
+#         if max_val is None or iter[i] > max_val:
+#             max_val = iter[i]
+#             max_pos = i
+#
+#     return max_pos
 
 
 dash.register_page(__name__, path="/", title="Frame Game Solver")
@@ -127,48 +128,32 @@ layout = html.Div(
                 dbc.Row(
                     [
                         dbc.Col(
-                            html.Div(id="page-layout", children=build_layout([])),
+                            [
+                                html.H4("Controls"),
+                                html.Div(id="page-layout", children=build_layout([])),
+                            ],
                             width=3,
                         ),
                         dbc.Col(
                             [
-                                dbc.Tabs(
-                                    [
-                                        dbc.Tab(
-                                            dbc.Card(
-                                                dbc.CardBody(
-                                                    dcc.Loading(
-                                                        html.A(
-                                                            children=[
-                                                                html.Img(
-                                                                    id="source_image",
-                                                                    className="img-fluid",
-                                                                )
-                                                            ],
-                                                            id="source_image_link",
-                                                        )
-                                                    ),
-                                                )
-                                            ),
-                                            label="Matched Image",
-                                        ),
-                                        dbc.Tab(
-                                            dbc.Card(
-                                                dbc.CardBody(
-                                                    dcc.Graph(
-                                                        id="match-graph",
-                                                        config={
-                                                            "displayModeBar": False
-                                                        },
-                                                    ),
-                                                )
-                                            ),
-                                            label="Data",
-                                        ),
-                                    ]
+                                html.H4("Best Frame Match"),
+                                dcc.Loading(
+                                    html.A(
+                                        children=[
+                                            html.Img(
+                                                id="source_image",
+                                                className="img-fluid",
+                                            )
+                                        ],
+                                        id="source_image_link",
+                                    )
                                 ),
                             ],
-                            width=9,
+                            width=7,
+                        ),
+                        dbc.Col(
+                            [html.H4("Frame Matches"), html.Div(id="match-list")],
+                            width=2,
                         ),
                     ]
                 ),
@@ -223,7 +208,7 @@ def update_image_src(value):
     Output("test_image_link", "href"),
     Output("source_image", "src"),
     Output("source_image_link", "href"),
-    Output("match-graph", "figure"),
+    Output("match-list", "children"),
     [
         Input("frame", "value"),
         Input("hint-num", "value"),
@@ -251,8 +236,11 @@ def update_results(frame_no, hint_no, keypoint):
         if max(hash_overlaps) == 0:
             raise Exception
 
-        match_idx = argmax(hash_overlaps)
+        # match_idx = argmax(hash_overlaps)
+        sorted_idx = np.argsort(hash_overlaps)
+        match_idx = sorted_idx[-1]
         best_frame_no = match_idx + 1
+
     except:
         test_hashes = None
         hash_overlaps = [0 for i in range(len(list_of_images))]
@@ -261,26 +249,23 @@ def update_results(frame_no, hint_no, keypoint):
 
     if test_hashes:
         source_image_path = f"{kps_image_route if keypoint else src_image_route}frame{frame_no}-full{'-kps' if keypoint else ''}.jpg"
+        match_list_children = [
+            html.Ol(
+                [
+                    html.Li(f"Frame {idx+1} - {hash_overlaps[idx]} hits")
+                    for idx in sorted_idx[::-1][:10]
+                    if hash_overlaps[idx] > 0
+                ]
+            )
+        ]
     else:
         source_image_path = f"/assets/sad_mac.jpg"
-
-    # Set the figure data
-    fig_data = go.Bar(
-        x=[i for i in range(1, 1 + len(list_of_images))],
-        y=hash_overlaps,
-    )
-    fig_layout = {
-        "xaxis_title": "Image Number",
-        "xaxis_fixedrange": True,
-        "yaxis_title": "Number of Matches",
-        "yaxis_fixedrange": True,
-    }
-    figure = go.Figure(data=[fig_data], layout=fig_layout)
+        match_list_children = ["No matches"]
 
     return (
         test_image_path,
         test_image_path,
         source_image_path,
         source_image_path,
-        figure,
+        match_list_children,
     )
