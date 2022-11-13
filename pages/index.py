@@ -132,7 +132,7 @@ layout = html.Div(
                                 html.H4("Controls"),
                                 html.Div(id="page-layout", children=build_layout([])),
                             ],
-                            lg=3, className='mb-3'
+                            lg=3, xs=12, className='mb-3'
                         ),
                         dbc.Col(
                             [
@@ -149,11 +149,11 @@ layout = html.Div(
                                     )
                                 ),
                             ],
-                            lg=7, className='mb-3'
+                            lg=7, xs=12, className='mb-3'
                         ),
                         dbc.Col(
                             [html.H4("Frame Matches"), html.Div(id="match-list")],
-                            lg=2, className='mb-3'
+                            lg=2, xs=12, className='mb-3'
                         ),
                     ]
                 ),
