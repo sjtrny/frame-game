@@ -5,6 +5,7 @@ import pickle
 import cv2 as cv
 import numpy as np
 from PIL import Image
+from tqdm import tqdm
 from sklearn.neighbors import NearestNeighbors
 
 from util import glob_re, original_image_path, sort_images
@@ -92,8 +93,8 @@ sift = cv.SIFT_create()
 
 hash_dict = {}
 
-for image_filename in source_filenames:
-    print(image_filename)
+
+for image_filename in tqdm(source_filenames):
 
     name = image_filename.split(".")[0]
     type = image_filename.split(".")[-1]
