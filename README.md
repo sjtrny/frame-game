@@ -8,6 +8,20 @@ Code for https://frame-game.onrender.com.
 - Keypoint generation relies on OpenCV.
 - Website is built using plotly Dash.
 
+# Instructions
+
+## Build
+
+`docker build -t frame-game .`
+
+## Run
+
+`docker run --name frame-game -d -p 8080:80 frame-game`
+
+## tar
+
+`tar --exclude-vcs -czf file.tar --exclude file.tar .`
+
 ### Running
 
 1. Setup a virtual environment and install requirements
