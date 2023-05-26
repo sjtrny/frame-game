@@ -1,6 +1,6 @@
 # frame-game
 
-Code for https://frame-game.onrender.com.
+Code for https://frame-game.apps.sjtrny.com/
 
 ### Overview
 
