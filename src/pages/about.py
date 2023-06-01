@@ -87,7 +87,7 @@ layout = html.Div(
                             for mobile devices. However Shazam existed as a phone service, long before smartphones.
 
                             The suprising thing about Shazam is that it doesn't use
-                            Machine Learning. Instead Shazam matches carefully crafted features between the sample and songs in its database.
+                            Supervised Learning. Instead Shazam matches carefully crafted features between the sample and songs in its database.
 
                             We can do the same for the Frame Game.
 
