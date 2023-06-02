@@ -93,7 +93,7 @@ sift = cv.SIFT_create()
 
 hash_dict = {}
 
-
+# Force rebuild
 for image_filename in tqdm(source_filenames):
 
     name = image_filename.split(".")[0]
