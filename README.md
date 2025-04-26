@@ -1,6 +1,6 @@
 # frame-game
 
-Code for https://frame-game.apps.sjtrny.com/
+Code for https://frame-game.sjtrny.com/
 
 ### Overview
 
